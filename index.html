@@ -450,7 +450,10 @@
     ];
 
     function getDomain(u) {
-        try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; }
+        try {
+            const url = new URL(u);
+            return (url.hostname + url.pathname + url.search).replace(/^www\./, '');
+        } catch { return u; }
     }
 
     function render() {
