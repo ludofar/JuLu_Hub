@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JuLu Hub — Ecosystème</title>
+    <style>
+        :root {
+            --bg: #0f1115;
+            --surface: #181b21;
+            --surface-hover: #1f232b;
+            --border: #2a2f38;
+            --text: #e8eaed;
+            --text-dim: #9aa0a6;
+            --accent: #8ab4f8;
+            --accent-2: #81c995;
+            --warning: #f28b82;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 17, 21, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 1.5rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .header-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        #search {
+            flex: 1;
+            min-width: 260px;
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #search:focus { border-color: var(--accent); }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 0.25rem;
+            border: 1px solid var(--border);
+        }
+
+        .view-toggle button {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .view-toggle button.active {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .filter-chip {
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .filter-chip:hover { border-color: var(--accent); color: var(--text); }
+        .filter-chip.active {
+            background: var(--accent);
+            color: #0f1115;
+            border-color: var(--accent);
+            font-weight: 500;
+        }
+
+        .project-section {
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .project-section.hidden { display: none; }
+
+        .project-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+            border-left: 4px solid var(--color);
+        }
+
+        .project-header:hover { background: var(--surface-hover); }
+
+        .project-header .title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .project-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .project-header .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            background: var(--badge-bg);
+            color: var(--badge-color);
+        }
+
+        .project-header .count {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .project-header .chevron {
+            transition: transform 0.2s;
+            color: var(--text-dim);
+            margin-left: 0.75rem;
+        }
+
+        .project-section.collapsed .chevron { transform: rotate(-90deg); }
+        .project-section.collapsed .links-grid { display: none; }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 0.75rem;
+            padding: 1rem 1.5rem 1.5rem;
+        }
+
+        .links-grid.compact {
+            grid-template-columns: 1fr;
+            gap: 0.4rem;
+            padding: 0.75rem 1.5rem 1rem;
+        }
+
+        .link-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.15s;
+        }
+
+        .link-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .link-card .url-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            word-break: break-all;
+        }
+
+        .link-card .label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .link-card .tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            background: var(--border);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            width: fit-content;
+            margin-top: 0.15rem;
+        }
+
+        .link-card .warn {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            background: rgba(242, 139, 130, 0.15);
+            color: var(--warning);
+            width: fit-content;
+            margin-top: 0.15rem;
+        }
+
+        .link-card.hidden { display: none; }
+
+        .subgroup {
+            grid-column: 1 / -1;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+            margin-bottom: -0.25rem;
+            padding-left: 0.25rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-dim);
+            font-size: 1rem;
+            display: none;
+        }
+
+        .no-results.visible { display: block; }
+
+        .shortcut-hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+
+        kbd {
+            background: var(--border);
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.8em;
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 1rem; }
+            header { margin: -1rem -1rem 1.5rem -1rem; padding: 1rem; }
+            .links-grid { grid-template-columns: 1fr; padding: 1rem; }
+            .header-row { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>JuLu Hub</h1>
+            <div class="header-row">
+                <input type="text" id="search" placeholder="Rechercher un site, un mot-cle, une URL..." autocomplete="off">
+                <div class="view-toggle">
+                    <button class="active" data-view="grid">Grille</button>
+                    <button data-view="compact">Liste</button>
+                </div>
+            </div>
+            <div class="shortcut-hint">
+                Raccourcis : <kbd>/</kbd> pour rechercher — <kbd>Esc</kbd> pour tout replier — clic sur un projet pour replier/deplier
+            </div>
+        </header>
+
+        <div class="filters" id="filters">
+            <button class="filter-chip active" data-filter="all">Tout</button>
+            <button class="filter-chip" data-filter="ventouses">Ventouses</button>
+            <button class="filter-chip" data-filter="yinshi">Yin Shi</button>
+            <button class="filter-chip" data-filter="bazi">Ba Zi</button>
+            <button class="filter-chip" data-filter="sgpe">SGPE</button>
+            <button class="filter-chip" data-filter="ia">IA</button>
+            <button class="filter-chip" data-filter="divers">Divers</button>
+        </div>
+
+        <main id="projects"></main>
+        <div class="no-results" id="noResults">Aucun resultat pour cette recherche.</div>
+    </div>
+
+    <script>
+    const projects = [
+        {
+            id: "ventouses",
+            name: "Ventouses",
+            badge: "EFVT",
+            color: "#f28b82",
+            links: [
+                { label: "Site principal EFVT", url: "https://www.formation-ventouse.com", tag: "Site public" },
+                { label: "Admin site principal", url: "https://www.formation-ventouse.com/rafalys/", tag: "Admin" },
+                { label: "Le Tao des Cinq", url: "http://www.letaodescinq.com", tag: "Site Astro" },
+                { label: "Site formation", url: "https://cours.efvt.net", tag: "WordPress" },
+                { label: "Admin site formation", url: "https://cours.efvt.net/wp-admin/", tag: "WordPress Admin" },
+                { subgroup: "Podcast" },
+                { label: "Podcast Amazon Music", url: "https://music.amazon.fr/podcasts/51443500-a875-4d7d-bf71-b022465c9975/ventouses-et-bien-%C3%AAtre-le-podcast-de-l%E2%80%99efvt---ecole-francophone-de-la-ventouse-et-du-tao", tag: "Podcast" },
+                { label: "Podcast Spotify", url: "https://open.spotify.com/show/1WkMJMi6QOw7yxfEsK9E9q", tag: "Podcast" }
+            ]
+        },
+        {
+            id: "yinshi-univers",
+            name: "Yin Shi Univers",
+            badge: "Social & Podcast",
+            color: "#81c995",
+            links: [
+                { subgroup: "Social" },
+                { label: "Facebook", url: "https://www.facebook.com/yinshi.dietetique/", tag: "Social" },
+                { label: "Instagram", url: "https://www.instagram.com/yinshi.app", tag: "Social" },
+                { label: "TikTok", url: "https://www.tiktok.com/@yinshi.app", tag: "Social" },
+                { label: "YouTube", url: "https://www.youtube.com/@YinShiApp", tag: "Social" },
+                { subgroup: "Podcast" },
+                { label: "Amazon Music", url: "https://music.amazon.fr/podcasts/c8b96ee6-8f44-40ac-baee-d86c62a15629/yin-shi-mangez-pour-gu%C3%A9rir", tag: "Podcast" },
+                { label: "Castbox", url: "https://castbox.fm/channel/id6628441", tag: "Podcast" },
+                { label: "iHeart", url: "https://www.iheart.com/podcast/269-yin-shi-mangez-pour-guerir-278511894/", tag: "Podcast" },
+                { label: "Spotify", url: "https://open.spotify.com/show/4PA2iYCwH0FES4TYvFzVMH", tag: "Podcast" },
+                { subgroup: "Videos" },
+                { label: "YouTube Studio", url: "https://studio.youtube.com/channel/UC1x69cZ3vnoQv3qxFRykhCA/videos/upload", tag: "Admin videos" }
+            ]
+        },
+        {
+            id: "yinshi",
+            name: "Yin Shi — App & Infra",
+            badge: "App",
+            color: "#81c995",
+            links: [
+                { subgroup: "Sites" },
+                { label: "Hub principal", url: "https://yinshi.app/", tag: "Astro / Devin" },
+                { label: "PWA", url: "https://www.yinshi.app/web/", tag: "App web" },
+                { label: "PWA Test", url: "https://yinshi-test.yinshi.app/", tag: "Test" },
+                { label: "Systeme de tracabilite", url: "https://tracabilite.yinshi.app/", tag: "Outil" },
+                { label: "Documentation app", url: "https://yinshi-docs.pages.dev/", tag: "Docs" },
+                { subgroup: "Academie" },
+                { label: "Academie Astro / Devin", url: "https://formation.yinshi.app/", tag: "Formation" },
+                { label: "Moodle", url: "https://cours.yinshi.app/", tag: "LMS" },
+                { label: "Supabase", url: "https://supabase.com/dashboard/project/uwypsffhdxhkzzotmzbh", tag: "Database" },
+                { subgroup: "Menu" },
+                { label: "WordPress Menu", url: "https://menu.yinshi.app/wp-admin/", tag: "Admin WP" },
+                { label: "Formulaire client", url: "https://menu.yinshi.app/formulaire-client/", tag: "Formulaire" },
+                { subgroup: "Serveurs & Admin" },
+                { label: "Apple App Store Connect", url: "https://appstoreconnect.apple.com/apps/6754167939/distribution/ios/version/inflight", tag: "App Store" },
+                { label: "Google Play Console", url: "https://play.google.com/console/u/0/developers/7352369364048399121/app/4974214866729949601/app-dashboard", tag: "Play Store" },
+                { label: "Firebase Console", url: "https://console.firebase.google.com/u/0/project/yin-shi-1967c/firestore/databases/-default-/data/~2Fapp_users", tag: "Backend" }
+            ]
+        },
+        {
+            id: "yinshi-test",
+            name: "Yin Shi TEST",
+            badge: "A revoir",
+            color: "#81c995",
+            links: [
+                { label: "Nourrir son moral (hors service)", url: "https://yinshi.app/nourrir_son_moral/profil_energetique.html", tag: "Hors service", warn: true },
+                { label: "Diagnostic metabolique (Vol. 2)", url: "https://www.bibliographie.yinshi.app/vol2_metabolisme/test/index.html", tag: "Test" },
+                { label: "Tests multiples (morphotype)", url: "https://ludofar.github.io/morphotype/", tag: "Test physique / T40 / CCMQ" },
+                { label: "Test langue", url: "https://ntfumvzz.gensparkspace.com/", tag: "Test" }
+            ]
+        },
+        {
+            id: "bazi",
+            name: "Ba Zi",
+            badge: "Famille",
+            color: "#ffdc78",
+            links: [
+                { label: "Etudes Ba Zi famille Poveda-Dumay", url: "https://etudes-bazi.pages.dev/", tag: "Site perso" }
+            ]
+        },
+        {
+            id: "sgpe",
+            name: "SGPE",
+            badge: "Formation intergalactiques",
+            color: "#c58af9",
+            links: [
+                { label: "Site general", url: "https://etudes-bazi.pages.dev/", tag: "Site" },
+                { label: "Explications techniques", url: "https://consultant-ia.net/SGPE/tech/index.html", tag: "Tech" },
+                { label: "Demarche commerciale", url: "https://consultant-ia.net/SGPE/commercial/index.html", tag: "Commercial" },
+                { label: "Presentation generale", url: "https://consultant-ia.net/SGPE/", tag: "Site" }
+            ]
+        },
+        {
+            id: "ia",
+            name: "IA",
+            badge: "Agence & Formations",
+            color: "#8ab4f8",
+            links: [
+                { subgroup: "Sites de pub" },
+                { label: "Site Suisse (a revoir)", url: "https://consultant-ia.net/a-propos.html", tag: "A revoir", warn: true },
+                { label: "Site officiel agence", url: "https://agence.consultant-ia.net/", tag: "Site agence" },
+                { label: "IA Spirituel (a faire)", url: "https://ia.letaodescinq.com/", tag: "A faire", warn: true },
+                { subgroup: "Formation" },
+                { label: "Formation aux skills Devin", url: "https://bmad.consultant-ia.net/skill_course/", tag: "Formation" },
+                { label: "BMAD — Gestion de projet", url: "https://bmad.consultant-ia.net/", tag: "Formation" }
+            ]
+        },
+        {
+            id: "divers",
+            name: "Divers",
+            badge: "Autre",
+            color: "#a8d5e2",
+            links: [
+                { label: "Financebooks (Astro)", url: "https://financebooks.efvt.net/", tag: "Site" }
+            ]
+        }
+    ];
+
+    function getDomain(u) {
+        try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; }
+    }
+
+    function render() {
+        const container = document.getElementById('projects');
+        container.innerHTML = projects.map(p => {
+            const count = p.links.filter(l => l.url).length;
+            const linkCards = p.links.map(l => {
+                if (l.subgroup) return `<div class="subgroup">${l.subgroup}</div>`;
+                const cls = l.warn ? 'warn' : 'tag';
+                const txt = l.warn ? l.tag : l.tag;
+                return `<a class="link-card" href="${l.url}" target="_blank" data-search="${(l.label + ' ' + l.url + ' ' + l.tag).toLowerCase()}">
+                    <span class="label">${l.label}</span>
+                    <span class="${cls}">${txt}</span>
+                    <div class="url-row">${linkIcon} ${getDomain(l.url)}</div>
+                </a>`;
+            }).join('');
+
+            return `<section class="project-section" data-project="${p.id === 'yinshi-univers' || p.id === 'yinshi-test' ? 'yinshi' : p.id}" data-name="${p.name.toLowerCase()}">
+                <div class="project-header" style="--color:${p.color}; --badge-bg:${p.color}26; --badge-color:${p.color}">
+                    <div class="title-row">
+                        <h2>${p.name}</h2>
+                        <span class="badge">${p.badge}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <span class="count">${count} lien${count > 1 ? 's' : ''}</span>
+                        <span class="chevron">&#9662;</span>
+                    </div>
+                </div>
+                <div class="links-grid">${linkCards}</div>
+            </section>`;
+        }).join('');
+
+        document.querySelectorAll('.project-header').forEach(h => {
+            h.addEventListener('click', () => h.closest('.project-section').classList.toggle('collapsed'));
+        });
+    }
+
+    const linkIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+
+    render();
+
+    let activeFilter = 'all';
+    let activeView = 'grid';
+
+    function applyFilters() {
+        const q = document.getElementById('search').value.toLowerCase().trim();
+        let anyVisible = false;
+
+        document.querySelectorAll('.project-section').forEach(sec => {
+            const pid = sec.dataset.project;
+            const pname = sec.dataset.name;
+            const matchesProject = activeFilter === 'all' || pid === activeFilter;
+            let visibleLinks = 0;
+
+            sec.querySelectorAll('.link-card').forEach(card => {
+                const matchesSearch = !q || card.dataset.search.includes(q);
+                const show = matchesProject && matchesSearch;
+                card.classList.toggle('hidden', !show);
+                if (show) visibleLinks++;
+            });
+
+            sec.querySelectorAll('.subgroup').forEach(sg => {
+                let next = sg.nextElementSibling;
+                let hasVisible = false;
+                while (next && !next.classList.contains('subgroup')) {
+                    if (!next.classList.contains('hidden')) hasVisible = true;
+                    next = next.nextElementSibling;
+                }
+                sg.style.display = (matchesProject && hasVisible) ? '' : 'none';
+            });
+
+            const showSection = matchesProject && (visibleLinks > 0 || !q);
+            sec.classList.toggle('hidden', !showSection);
+            if (showSection) anyVisible = true;
+        });
+
+        document.getElementById('noResults').classList.toggle('visible', !anyVisible);
+    }
+
+    document.getElementById('search').addEventListener('input', applyFilters);
+
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.dataset.filter;
+            applyFilters();
+        });
+    });
+
+    document.querySelectorAll('.view-toggle button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeView = btn.dataset.view;
+            document.querySelectorAll('.links-grid').forEach(g => g.classList.toggle('compact', activeView === 'compact'));
+        });
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement.id !== 'search') {
+            e.preventDefault();
+            document.getElementById('search').focus();
+        }
+        if (e.key === 'Escape') {
+            const search = document.getElementById('search');
+            if (search.value) { search.value = ''; applyFilters(); }
+            else {
+                const allCollapsed = [...document.querySelectorAll('.project-section')].every(s => s.classList.contains('collapsed'));
+                document.querySelectorAll('.project-section').forEach(s => s.classList.toggle('collapsed', !allCollapsed));
+            }
+        }
+    });
+    </script>
+</body>
+</html>
